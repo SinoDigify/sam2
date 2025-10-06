@@ -142,10 +142,13 @@
         }
 
         .canvas-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .canvas-layers {
@@ -276,6 +279,7 @@
             margin-bottom: 20px;
             border-bottom: 1px solid #e0e0e0;
             padding-bottom: 15px;
+            cursor: pointer;
         }
 
         .section:last-child {
@@ -286,15 +290,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: pointer;
             padding: 8px 10px;
             background: #f8f9fa;
             border-radius: 4px;
             margin-bottom: 10px;
             user-select: none;
+            transition: background 0.2s;
         }
 
-        .section-header:hover {
+        .section:hover .section-header {
             background: #e9ecef;
         }
 
@@ -522,6 +526,60 @@
             width: 100%;
             margin-top: 15px;
         }
+
+        /* 缩略图导航 */
+        .minimap {
+            position: fixed;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: move;
+            z-index: 1000;
+            user-select: none;
+        }
+
+        .minimap-header {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .minimap-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+            width: 16px;
+            height: 16px;
+            line-height: 14px;
+        }
+
+        .minimap-canvas-wrapper {
+            position: relative;
+            padding: 4px;
+        }
+
+        .minimap-canvas {
+            display: block;
+            max-width: 200px;
+            max-height: 200px;
+        }
+
+        .minimap-viewport {
+            position: absolute;
+            border: 2px solid #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -546,6 +604,7 @@
     <div class="main-content">
         <div class="toolbar">
             <div style="font-size: 14px; font-weight: 600;">📍 框选区域 (最小 100×100)</div>
+            <button class="btn btn-secondary" onclick="toggleMinimap()">🗺️ 导航</button>
         </div>
 
         <div class="canvas-wrapper" id="canvasWrapper">
@@ -574,12 +633,12 @@
 
         <div class="panel-content">
             <!-- 主题预设 -->
-            <div class="section">
-                <div class="section-header" onclick="toggleSection(this)">
+            <div class="section" onclick="toggleSection(this)">
+                <div class="section-header">
                     <span class="section-title">🎨 主题预设</span>
                     <span class="collapse-icon">▼</span>
                 </div>
-                <div class="section-body">
+                <div class="section-body" onclick="event.stopPropagation()">
                     <div class="theme-presets">
                         <button class="theme-btn" onclick="applyTheme('default')">
                             <span class="theme-name">默认</span>
@@ -610,12 +669,12 @@
             </div>
 
             <!-- 缩放控制 -->
-            <div class="section collapsed">
-                <div class="section-header" onclick="toggleSection(this)">
+            <div class="section collapsed" onclick="toggleSection(this)">
+                <div class="section-header">
                     <span class="section-title">🔍 缩放控制</span>
                     <span class="collapse-icon">▼</span>
                 </div>
-                <div class="section-body">
+                <div class="section-body" onclick="event.stopPropagation()">
                     <div class="zoom-controls">
                         <button class="btn btn-secondary" onclick="zoomOut()" style="flex: 1;">−</button>
                         <span class="zoom-level" id="zoomLevel">100%</span>
@@ -626,12 +685,12 @@
             </div>
 
             <!-- 网格参考线 -->
-            <div class="section collapsed">
-                <div class="section-header" onclick="toggleSection(this)">
+            <div class="section collapsed" onclick="toggleSection(this)">
+                <div class="section-header">
                     <span class="section-title">📐 网格参考线</span>
                     <span class="collapse-icon">▼</span>
                 </div>
-                <div class="section-body">
+                <div class="section-body" onclick="event.stopPropagation()">
                     <div class="checkbox-group">
                         <input type="checkbox" id="showGrid" onchange="toggleGrid()">
                         <label for="showGrid">显示网格</label>
@@ -644,12 +703,12 @@
             </div>
 
             <!-- 图像调整 -->
-            <div class="section collapsed">
-                <div class="section-header" onclick="toggleSection(this)">
+            <div class="section collapsed" onclick="toggleSection(this)">
+                <div class="section-header">
                     <span class="section-title">🎨 图像调整</span>
                     <span class="collapse-icon">▼</span>
                 </div>
-                <div class="section-body">
+                <div class="section-body" onclick="event.stopPropagation()">
                     <div class="control-group">
                         <label>亮度: <span class="control-value" id="brightnessValue">100</span>%</label>
                         <input type="range" id="brightness" min="0" max="200" value="100" oninput="updateImageAdjustments()">
@@ -684,12 +743,12 @@
             </div>
 
             <!-- 曲线调整 -->
-            <div class="section collapsed">
-                <div class="section-header" onclick="toggleSection(this)">
+            <div class="section collapsed" onclick="toggleSection(this)">
+                <div class="section-header">
                     <span class="section-title">📈 曲线调整</span>
                     <span class="collapse-icon">▼</span>
                 </div>
-                <div class="section-body">
+                <div class="section-body" onclick="event.stopPropagation()">
                     <canvas id="curveCanvas" class="curve-canvas" width="256" height="150"></canvas>
                     <div class="curve-presets">
                         <button class="curve-preset-btn" onclick="applyCurvePreset('linear')">线性</button>
@@ -703,6 +762,18 @@
 
             <!-- 保存配置按钮 -->
             <button class="btn btn-success save-config-btn" onclick="saveConfigToServer()">💾 保存配置到服务器</button>
+        </div>
+    </div>
+
+    <!-- 缩略图导航（全局浮动） -->
+    <div class="minimap" id="minimap" style="display: none;">
+        <div class="minimap-header" id="minimapHeader">
+            <span>导航</span>
+            <button class="minimap-close" onclick="toggleMinimap()">×</button>
+        </div>
+        <div class="minimap-canvas-wrapper">
+            <canvas id="minimapCanvas" class="minimap-canvas"></canvas>
+            <div class="minimap-viewport" id="minimapViewport"></div>
         </div>
     </div>
 
@@ -727,12 +798,24 @@
         const crosshairH = document.getElementById('crosshairH');
         const crosshairV = document.getElementById('crosshairV');
 
+        // 缩略图相关元素
+        const minimap = document.getElementById('minimap');
+        const minimapCanvas = document.getElementById('minimapCanvas');
+        const minimapCtx = minimapCanvas.getContext('2d');
+        const minimapViewport = document.getElementById('minimapViewport');
+        const minimapHeader = document.getElementById('minimapHeader');
+
         let originalImage = null;
         let scale = 1;
         let isDragging = false;
         let startX, startY;
         let selectionBox = null;
         let selectionSizeLabel = null;
+
+        // 缩略图拖动
+        let isMinimapDragging = false;
+        let minimapDragOffsetX = 0;
+        let minimapDragOffsetY = 0;
 
         // 图像调整参数
         let brightness = 100;
@@ -802,8 +885,12 @@
         }
 
         // 切换折叠区域
-        function toggleSection(header) {
-            header.parentElement.classList.toggle('collapsed');
+        function toggleSection(element) {
+            // 如果点击的是 section 元素本身，使用它；否则找到父 section
+            const section = element.classList.contains('section') ? element : element.closest('.section');
+            if (section) {
+                section.classList.toggle('collapsed');
+            }
         }
 
         // 应用主题
@@ -850,6 +937,7 @@
 
                     redrawCanvas();
                     updatePreview();
+                    updateMinimap();
                     statusText.textContent = '✅ 就绪 - 框选汉字开始分割 (最小 100×100)';
                     loadSavedSegments();
                     loadConfig();  // 加载保存的配置
@@ -867,9 +955,9 @@
                 const response = await fetch('/get_config');
                 const config = await response.json();
 
-                brightness = config.brightness || 100;
-                contrast = config.contrast || 100;
-                saturation = config.saturation || 100;
+                brightness = config.brightness !== undefined ? config.brightness : 100;
+                contrast = config.contrast !== undefined ? config.contrast : 100;
+                saturation = config.saturation !== undefined ? config.saturation : 100;
                 invertColors = config.invert_colors || false;
 
                 document.getElementById('brightness').value = brightness;
@@ -1085,6 +1173,8 @@
             const newHeight = canvas.height * scale;
             wrapper.scrollLeft = centerX * newWidth - wrapper.clientWidth / 2;
             wrapper.scrollTop = centerY * newHeight - wrapper.clientHeight / 2;
+
+            updateMinimapViewport();
         }
 
         // 鼠标事件
@@ -1438,6 +1528,124 @@
             selectedPoint = null;
             updateCurveLUT();
         }
+
+        // ===== 缩略图导航功能 =====
+
+        function toggleMinimap() {
+            if (minimap.style.display === 'none') {
+                minimap.style.display = 'block';
+                positionMinimapNearButton();
+                updateMinimap();
+            } else {
+                minimap.style.display = 'none';
+            }
+        }
+
+        function positionMinimapNearButton() {
+            // 获取导航按钮的位置
+            const navButton = document.querySelector('.toolbar .btn-secondary');
+            if (navButton) {
+                const rect = navButton.getBoundingClientRect();
+                // 定位在按钮下方，稍微偏右
+                minimap.style.left = (rect.left) + 'px';
+                minimap.style.top = (rect.bottom + 10) + 'px';
+            }
+        }
+
+        function updateMinimap() {
+            if (!originalImage || minimap.style.display === 'none') return;
+
+            const maxSize = 200;
+            const imgW = originalImage.width;
+            const imgH = originalImage.height;
+            const minimapScale = Math.min(maxSize / imgW, maxSize / imgH);
+
+            minimapCanvas.width = imgW * minimapScale;
+            minimapCanvas.height = imgH * minimapScale;
+
+            // 绘制缩略图
+            minimapCtx.drawImage(originalImage, 0, 0, minimapCanvas.width, minimapCanvas.height);
+
+            // 更新视口位置
+            updateMinimapViewport();
+        }
+
+        function updateMinimapViewport() {
+            if (!originalImage || minimap.style.display === 'none') return;
+
+            const wrapper = canvasWrapper;
+            const imgW = originalImage.width;
+            const imgH = originalImage.height;
+            const minimapScale = minimapCanvas.width / imgW;
+
+            // 计算可视区域在原图中的位置和大小
+            const viewportW = wrapper.clientWidth / scale;
+            const viewportH = wrapper.clientHeight / scale;
+            const scrollX = (wrapper.scrollLeft - (canvasContainer.offsetWidth - canvas.width * scale) / 2) / scale;
+            const scrollY = (wrapper.scrollTop - (canvasContainer.offsetHeight - canvas.height * scale) / 2) / scale;
+
+            // 在缩略图上显示视口
+            const vpLeft = Math.max(0, scrollX * minimapScale);
+            const vpTop = Math.max(0, scrollY * minimapScale);
+            const vpWidth = Math.min(viewportW * minimapScale, minimapCanvas.width - vpLeft);
+            const vpHeight = Math.min(viewportH * minimapScale, minimapCanvas.height - vpTop);
+
+            minimapViewport.style.left = (vpLeft + 4) + 'px';
+            minimapViewport.style.top = (vpTop + 4) + 'px';
+            minimapViewport.style.width = vpWidth + 'px';
+            minimapViewport.style.height = vpHeight + 'px';
+        }
+
+        // 缩略图拖动（全局范围）
+        minimapHeader.addEventListener('mousedown', (e) => {
+            isMinimapDragging = true;
+            const rect = minimap.getBoundingClientRect();
+            minimapDragOffsetX = e.clientX - rect.left;
+            minimapDragOffsetY = e.clientY - rect.top;
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isMinimapDragging) {
+                const newLeft = e.clientX - minimapDragOffsetX;
+                const newTop = e.clientY - minimapDragOffsetY;
+
+                // 限制在窗口范围内
+                const maxLeft = window.innerWidth - minimap.offsetWidth;
+                const maxTop = window.innerHeight - minimap.offsetHeight;
+
+                minimap.style.left = Math.max(0, Math.min(newLeft, maxLeft)) + 'px';
+                minimap.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isMinimapDragging = false;
+        });
+
+        // 缩略图点击跳转
+        minimapCanvas.addEventListener('click', (e) => {
+            const rect = minimapCanvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            const imgW = originalImage.width;
+            const imgH = originalImage.height;
+            const minimapScale = minimapCanvas.width / imgW;
+
+            const targetX = (clickX / minimapScale) * scale;
+            const targetY = (clickY / minimapScale) * scale;
+
+            const wrapper = canvasWrapper;
+            wrapper.scrollLeft = targetX - wrapper.clientWidth / 2 + (canvasContainer.offsetWidth - canvas.width * scale) / 2;
+            wrapper.scrollTop = targetY - wrapper.clientHeight / 2 + (canvasContainer.offsetHeight - canvas.height * scale) / 2;
+
+            updateMinimapViewport();
+        });
+
+        // 监听滚动和缩放，更新缩略图视口
+        canvasWrapper.addEventListener('scroll', updateMinimapViewport);
 
         loadImage();
         updateCurveLUT();
