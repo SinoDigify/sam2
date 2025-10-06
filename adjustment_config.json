@@ -1,0 +1,16 @@
+{
+  "brightness": 100,
+  "contrast": 100,
+  "saturation": 100,
+  "invert_colors": false,
+  "curve_points": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 255,
+      "y": 255
+    }
+  ]
+}

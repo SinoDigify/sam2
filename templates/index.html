@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>书法分割工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 340px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #408ade 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 12px;
+        }
+
+        .controls {
+            padding: 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .control-group:last-child {
+            border-bottom: none;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        .control-value {
+            display: inline-block;
+            min-width: 50px;
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .zoom-controls, .grid-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-reset {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #138496;
+        }
+
+        .status {
+            padding: 10px 15px;
+            background: #e7f3ff;
+            border-bottom: 1px solid #b3d9ff;
+            font-size: 12px;
+            color: #0066cc;
+        }
+
+        .segments-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .segments-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .segment-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .segment-item {
+            position: relative;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 8px;
+            transition: all 0.2s;
+        }
+
+        .segment-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .segment-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 2px;
+        }
+
+        .segment-item .delete-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .segment-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .segment-id {
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fafafa;
+        }
+
+        .toolbar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+            background: #fafafa;
+        }
+
+        .canvas-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .canvas-layers {
+            position: relative;
+        }
+
+        #canvas {
+            cursor: crosshair;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: block;
+        }
+
+        #gridCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .selection-box {
+            position: absolute;
+            border: 2px solid #667eea;
+            background: rgba(102, 126, 234, 0.15);
+            pointer-events: none;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+            z-index: 20;
+        }
+
+        .selection-size {
+            position: absolute;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 21;
+        }
+
+        .crosshair-h, .crosshair-v {
+            position: absolute;
+            background: rgba(255, 0, 0, 0.5);
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        .crosshair-h {
+            height: 1px;
+            left: 0;
+            right: 0;
+        }
+
+        .crosshair-v {
+            width: 1px;
+            top: 0;
+            bottom: 0;
+        }
+
+        .instructions {
+            background: white;
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+        }
+
+        .instructions strong {
+            color: #667eea;
+        }
+
+        .zoom-level {
+            font-size: 12px;
+            color: #666;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 12px;
+            font-weight: normal;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .comparison-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .comparison-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .comparison-item canvas {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .comparison-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .curve-editor {
+            margin-top: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .curve-canvas {
+            width: 100%;
+            height: 200px;
+            border: 1px solid #e0e0e0;
+            cursor: crosshair;
+            display: block;
+        }
+
+        .curve-presets {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .curve-preset-btn {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .curve-preset-btn:hover {
+            background: #f0f0f0;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="header">
+            <h1>🖼️ 书法分割工具</h1>
+            <p>框选自动分割 · 专业工具</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>🔍 缩放控制</label>
+                <div class="zoom-controls">
+                    <button class="btn btn-secondary" onclick="zoomOut()">−</button>
+                    <span class="zoom-level" id="zoomLevel">100%</span>
+                    <button class="btn btn-secondary" onclick="zoomIn()">+</button>
+                    <button class="btn btn-secondary" onclick="resetZoom()">重置</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>📐 网格参考线</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showGrid" onchange="toggleGrid()">
+                    <label for="showGrid">显示网格</label>
+                </div>
+                <div style="margin-top: 8px;">
+                    <label style="font-size: 11px; color: #999;">网格间距: <span class="control-value" id="gridSizeValue">50</span>px</label>
+                    <input type="range" id="gridSize" min="20" max="200" value="50" oninput="updateGridSize(this.value)" disabled>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>🎨 图像调整</label>
+                <div style="margin-bottom: 8px;">
+                    <label style="font-size: 11px; color: #999;">亮度: <span class="control-value" id="brightnessValue">100</span>%</label>
+                    <input type="range" id="brightness" min="0" max="200" value="100" oninput="updateImageAdjustments()">
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <label style="font-size: 11px; color: #999;">对比度: <span class="control-value" id="contrastValue">100</span>%</label>
+                    <input type="range" id="contrast" min="0" max="200" value="100" oninput="updateImageAdjustments()">
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <label style="font-size: 11px; color: #999;">饱和度: <span class="control-value" id="saturationValue">100</span>%</label>
+                    <input type="range" id="saturation" min="0" max="200" value="100" oninput="updateImageAdjustments()">
+                </div>
+
+                <!-- 反色 -->
+                <div class="checkbox-group" style="margin-top: 8px;">
+                    <input type="checkbox" id="invertColors" onchange="updateImageAdjustments()">
+                    <label for="invertColors">🔄 反色</label>
+                </div>
+
+                <!-- 曲线调整 -->
+                <div class="curve-editor">
+                    <label style="font-size: 11px; color: #999; display: block; margin-bottom: 5px;">📈 色调曲线</label>
+                    <canvas id="curveCanvas" class="curve-canvas" width="256" height="200"></canvas>
+                    <div class="curve-presets">
+                        <button class="curve-preset-btn" onclick="applyCurvePreset('linear')">线性</button>
+                        <button class="curve-preset-btn" onclick="applyCurvePreset('increase')">提亮</button>
+                        <button class="curve-preset-btn" onclick="applyCurvePreset('decrease')">压暗</button>
+                        <button class="curve-preset-btn" onclick="applyCurvePreset('contrast')">高对比</button>
+                        <button class="curve-preset-btn" onclick="applyCurvePreset('sshape')">S曲线</button>
+                    </div>
+                </div>
+
+                <!-- 对比预览 -->
+                <div class="comparison-container">
+                    <div class="comparison-item">
+                        <canvas id="previewOriginal" width="120" height="120"></canvas>
+                        <div class="comparison-label">原始</div>
+                    </div>
+                    <div class="comparison-item">
+                        <canvas id="previewAdjusted" width="120" height="120"></canvas>
+                        <div class="comparison-label">调整后</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-reset" onclick="resetAdjustments()" style="width: 100%; margin-top: 10px;">重置所有调整</button>
+            </div>
+        </div>
+
+        <div class="status" id="statusText">加载中...</div>
+
+        <div class="segments-container">
+            <div class="segments-title">
+                📦 已分割汉字 (<span id="segmentCount">0</span>)
+            </div>
+            <div class="segment-grid" id="segmentGrid"></div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="toolbar">
+            <div style="font-size: 14px; font-weight: 600;">📍 框选区域 (最小 100×100)</div>
+        </div>
+
+        <div class="canvas-wrapper" id="canvasWrapper">
+            <div class="canvas-container" id="canvasContainer">
+                <div class="canvas-layers">
+                    <canvas id="canvas"></canvas>
+                    <canvas id="gridCanvas"></canvas>
+                    <div class="crosshair-h" id="crosshairH" style="display: none;"></div>
+                    <div class="crosshair-v" id="crosshairV" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <strong>使用说明：</strong>
+            框选汉字 (≥100×100) → 自动分割保存 → 使用网格和图像调整辅助精确选择
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const gridCanvas = document.getElementById('gridCanvas');
+        const gridCtx = gridCanvas.getContext('2d');
+        const previewOriginal = document.getElementById('previewOriginal');
+        const previewAdjusted = document.getElementById('previewAdjusted');
+        const previewOriginalCtx = previewOriginal.getContext('2d');
+        const previewAdjustedCtx = previewAdjusted.getContext('2d');
+        const curveCanvas = document.getElementById('curveCanvas');
+        const curveCtx = curveCanvas.getContext('2d');
+
+        const canvasContainer = document.getElementById('canvasContainer');
+        const canvasWrapper = document.getElementById('canvasWrapper');
+        const statusText = document.getElementById('statusText');
+        const segmentCount = document.getElementById('segmentCount');
+        const segmentGrid = document.getElementById('segmentGrid');
+        const zoomLevelText = document.getElementById('zoomLevel');
+        const crosshairH = document.getElementById('crosshairH');
+        const crosshairV = document.getElementById('crosshairV');
+
+        let originalImage = null;
+        let scale = 1;
+        let isDragging = false;
+        let startX, startY;
+        let selectionBox = null;
+        let selectionSizeLabel = null;
+
+        // 图像调整参数
+        let brightness = 100;
+        let contrast = 100;
+        let saturation = 100;
+        let invertColors = false;
+        let showGrid = false;
+        let gridSize = 50;
+
+        // 曲线调整参数
+        let curvePoints = [{x: 0, y: 0}, {x: 255, y: 255}];
+        let curveLUT = new Array(256);  // 查找表
+        let selectedPoint = null;
+        let isDraggingCurve = false;
+
+        const MIN_SELECTION_SIZE = 100;
+
+        // 加载图像
+        async function loadImage() {
+            try {
+                const response = await fetch('/get_image');
+                const data = await response.json();
+
+                originalImage = new Image();
+                originalImage.onload = () => {
+                    canvas.width = originalImage.width;
+                    canvas.height = originalImage.height;
+                    gridCanvas.width = originalImage.width;
+                    gridCanvas.height = originalImage.height;
+
+                    redrawCanvas();
+                    updatePreview();
+                    statusText.textContent = '✅ 就绪 - 框选汉字开始分割 (最小 100×100)';
+                    loadSavedSegments();
+                    loadConfig();  // 加载保存的配置
+                };
+                originalImage.src = data.image;
+            } catch (error) {
+                console.error('加载图像失败:', error);
+                statusText.textContent = '❌ 加载失败';
+            }
+        }
+
+        // 加载配置
+        async function loadConfig() {
+            try {
+                const response = await fetch('/get_config');
+                const config = await response.json();
+
+                // 应用配置
+                brightness = config.brightness || 100;
+                contrast = config.contrast || 100;
+                saturation = config.saturation || 100;
+                invertColors = config.invert_colors || false;
+
+                // 更新 UI
+                document.getElementById('brightness').value = brightness;
+                document.getElementById('contrast').value = contrast;
+                document.getElementById('saturation').value = saturation;
+                document.getElementById('invertColors').checked = invertColors;
+                document.getElementById('brightnessValue').textContent = brightness;
+                document.getElementById('contrastValue').textContent = contrast;
+                document.getElementById('saturationValue').textContent = saturation;
+
+                // 加载曲线点
+                if (config.curve_points && config.curve_points.length > 0) {
+                    curvePoints = config.curve_points;
+                    updateCurveLUT();
+                }
+
+                redrawCanvas();
+                updatePreview();
+            } catch (error) {
+                console.error('加载配置失败:', error);
+            }
+        }
+
+        // 保存配置
+        async function saveConfig() {
+            try {
+                const config = {
+                    brightness: parseInt(brightness),
+                    contrast: parseInt(contrast),
+                    saturation: parseInt(saturation),
+                    invert_colors: invertColors,
+                    curve_points: curvePoints
+                };
+
+                await fetch('/save_config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+            } catch (error) {
+                console.error('保存配置失败:', error);
+            }
+        }
+
+        // 更新预览
+        function updatePreview() {
+            if (!originalImage) return;
+
+            const size = 120;
+            const scale = Math.min(size / originalImage.width, size / originalImage.height);
+            const w = originalImage.width * scale;
+            const h = originalImage.height * scale;
+            const x = (size - w) / 2;
+            const y = (size - h) / 2;
+
+            // 原始预览
+            previewOriginalCtx.fillStyle = '#f0f0f0';
+            previewOriginalCtx.fillRect(0, 0, size, size);
+            previewOriginalCtx.drawImage(originalImage, x, y, w, h);
+
+            // 调整后预览
+            previewAdjustedCtx.fillStyle = '#f0f0f0';
+            previewAdjustedCtx.fillRect(0, 0, size, size);
+            previewAdjustedCtx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+            previewAdjustedCtx.drawImage(originalImage, x, y, w, h);
+            previewAdjustedCtx.filter = 'none';
+
+            // 应用曲线调整到预览
+            applyCurveToCanvas(previewAdjustedCtx, size, size);
+        }
+
+        // 重绘画布
+        function redrawCanvas() {
+            if (!originalImage) return;
+
+            const displayWidth = canvas.width * scale;
+            const displayHeight = canvas.height * scale;
+
+            const canvasLayers = document.querySelector('.canvas-layers');
+            canvasLayers.style.width = displayWidth + 'px';
+            canvasLayers.style.height = displayHeight + 'px';
+
+            // 清空主画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 应用图像调整
+            ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+            ctx.drawImage(originalImage, 0, 0);
+            ctx.filter = 'none';
+
+            // 应用曲线调整
+            applyCurveToCanvas(ctx, canvas.width, canvas.height);
+
+            // 绘制网格到独立层
+            drawGrid();
+        }
+
+        // 绘制网格
+        function drawGrid() {
+            gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+
+            if (!showGrid) return;
+
+            gridCtx.strokeStyle = 'rgba(102, 126, 234, 0.5)';
+            gridCtx.lineWidth = 1;
+
+            // 绘制垂直线
+            for (let x = 0; x < gridCanvas.width; x += gridSize) {
+                gridCtx.beginPath();
+                gridCtx.moveTo(x, 0);
+                gridCtx.lineTo(x, gridCanvas.height);
+                gridCtx.stroke();
+            }
+
+            // 绘制水平线
+            for (let y = 0; y < gridCanvas.height; y += gridSize) {
+                gridCtx.beginPath();
+                gridCtx.moveTo(0, y);
+                gridCtx.lineTo(gridCanvas.width, y);
+                gridCtx.stroke();
+            }
+        }
+
+        // 更新图像调整
+        function updateImageAdjustments() {
+            brightness = document.getElementById('brightness').value;
+            contrast = document.getElementById('contrast').value;
+            saturation = document.getElementById('saturation').value;
+            invertColors = document.getElementById('invertColors').checked;
+
+            document.getElementById('brightnessValue').textContent = brightness;
+            document.getElementById('contrastValue').textContent = contrast;
+            document.getElementById('saturationValue').textContent = saturation;
+
+            redrawCanvas();
+            updatePreview();
+            saveConfig();  // 自动保存配置
+        }
+
+        // 重置调整
+        function resetAdjustments() {
+            document.getElementById('brightness').value = 100;
+            document.getElementById('contrast').value = 100;
+            document.getElementById('saturation').value = 100;
+            document.getElementById('invertColors').checked = false;
+            applyCurvePreset('linear');  // 同时重置曲线
+            updateImageAdjustments();
+        }
+
+        // 应用曲线调整到画布
+        function applyCurveToCanvas(context, width, height) {
+            const imageData = context.getImageData(0, 0, width, height);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = curveLUT[data[i]];         // R
+                data[i + 1] = curveLUT[data[i + 1]]; // G
+                data[i + 2] = curveLUT[data[i + 2]]; // B
+                // Alpha 通道不变
+            }
+
+            // 应用反色
+            if (invertColors) {
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = 255 - data[i];         // R
+                    data[i + 1] = 255 - data[i + 1]; // G
+                    data[i + 2] = 255 - data[i + 2]; // B
+                }
+            }
+
+            context.putImageData(imageData, 0, 0);
+        }
+
+        // 切换网格
+        function toggleGrid() {
+            showGrid = document.getElementById('showGrid').checked;
+            document.getElementById('gridSize').disabled = !showGrid;
+            drawGrid();
+        }
+
+        // 更新网格大小
+        function updateGridSize(value) {
+            gridSize = parseInt(value);
+            document.getElementById('gridSizeValue').textContent = gridSize;
+            drawGrid();
+        }
+
+        // 缩放控制
+        function zoomIn() {
+            const oldScale = scale;
+            scale = Math.min(scale + 0.25, 3);
+            updateZoom(oldScale);
+        }
+
+        function zoomOut() {
+            const oldScale = scale;
+            scale = Math.max(scale - 0.25, 0.25);
+            updateZoom(oldScale);
+        }
+
+        function resetZoom() {
+            const oldScale = scale;
+            scale = 1;
+            updateZoom(oldScale);
+        }
+
+        function updateZoom(oldScale) {
+            const wrapper = canvasWrapper;
+            const scrollLeft = wrapper.scrollLeft;
+            const scrollTop = wrapper.scrollTop;
+            const viewportCenterX = scrollLeft + wrapper.clientWidth / 2;
+            const viewportCenterY = scrollTop + wrapper.clientHeight / 2;
+
+            const oldWidth = canvas.width * oldScale;
+            const oldHeight = canvas.height * oldScale;
+            const centerX = viewportCenterX / oldWidth;
+            const centerY = viewportCenterY / oldHeight;
+
+            zoomLevelText.textContent = Math.round(scale * 100) + '%';
+            redrawCanvas();
+
+            const newWidth = canvas.width * scale;
+            const newHeight = canvas.height * scale;
+            wrapper.scrollLeft = centerX * newWidth - wrapper.clientWidth / 2;
+            wrapper.scrollTop = centerY * newHeight - wrapper.clientHeight / 2;
+        }
+
+        // 鼠标事件
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                updateSelection(e);
+            } else {
+                updateCrosshair(e);
+            }
+        });
+
+        canvas.addEventListener('mouseenter', () => {
+            crosshairH.style.display = 'block';
+            crosshairV.style.display = 'block';
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            crosshairH.style.display = 'none';
+            crosshairV.style.display = 'none';
+        });
+
+        function updateCrosshair(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            crosshairH.style.top = y + 'px';
+            crosshairV.style.left = x + 'px';
+        }
+
+        function updateSelection(e) {
+            if (!selectionBox) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const currentX = (e.clientX - rect.left) / scale;
+            const currentY = (e.clientY - rect.top) / scale;
+
+            const width = Math.abs(currentX - startX);
+            const height = Math.abs(currentY - startY);
+            const left = Math.min(startX, currentX);
+            const top = Math.min(startY, currentY);
+
+            selectionBox.style.left = (left * scale) + 'px';
+            selectionBox.style.top = (top * scale) + 'px';
+            selectionBox.style.width = (width * scale) + 'px';
+            selectionBox.style.height = (height * scale) + 'px';
+
+            const isValid = width >= MIN_SELECTION_SIZE && height >= MIN_SELECTION_SIZE;
+            selectionSizeLabel.textContent = `${Math.round(width)} × ${Math.round(height)}`;
+            selectionSizeLabel.style.background = isValid ? 'rgba(40, 167, 69, 0.9)' : 'rgba(220, 53, 69, 0.9)';
+            selectionSizeLabel.style.left = (left * scale) + 'px';
+            selectionSizeLabel.style.top = (top * scale - 20) + 'px';
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            startX = (e.clientX - rect.left) / scale;
+            startY = (e.clientY - rect.top) / scale;
+            isDragging = true;
+
+            crosshairH.style.display = 'none';
+            crosshairV.style.display = 'none';
+
+            const canvasLayers = document.querySelector('.canvas-layers');
+
+            selectionBox = document.createElement('div');
+            selectionBox.className = 'selection-box';
+            selectionBox.style.left = (startX * scale) + 'px';
+            selectionBox.style.top = (startY * scale) + 'px';
+            canvasLayers.appendChild(selectionBox);
+
+            selectionSizeLabel = document.createElement('div');
+            selectionSizeLabel.className = 'selection-size';
+            selectionSizeLabel.textContent = '0 × 0';
+            canvasLayers.appendChild(selectionSizeLabel);
+        });
+
+        canvas.addEventListener('mouseup', async (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+
+            const rect = canvas.getBoundingClientRect();
+            const endX = (e.clientX - rect.left) / scale;
+            const endY = (e.clientY - rect.top) / scale;
+
+            const x1 = Math.min(startX, endX);
+            const y1 = Math.min(startY, endY);
+            const x2 = Math.max(startX, endX);
+            const y2 = Math.max(startY, endY);
+
+            const width = x2 - x1;
+            const height = y2 - y1;
+
+            if (selectionBox) {
+                selectionBox.remove();
+                selectionBox = null;
+            }
+            if (selectionSizeLabel) {
+                selectionSizeLabel.remove();
+                selectionSizeLabel = null;
+            }
+
+            crosshairH.style.display = 'block';
+            crosshairV.style.display = 'block';
+
+            if (width < MIN_SELECTION_SIZE || height < MIN_SELECTION_SIZE) {
+                statusText.textContent = `❌ 选区太小 (${Math.round(width)}×${Math.round(height)})，需要至少 ${MIN_SELECTION_SIZE}×${MIN_SELECTION_SIZE}`;
+                return;
+            }
+
+            statusText.textContent = '⏳ 分割中...';
+
+            try {
+                const response = await fetch('/predict_box', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        box: [x1, y1, x2, y2],
+                        brightness: brightness,
+                        contrast: contrast,
+                        saturation: saturation,
+                        curve_lut: curveLUT,
+                        invert_colors: invertColors  // 添加反色参数
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusText.textContent = `✅ 已保存 (得分: ${data.score.toFixed(3)}, ${Math.round(width)}×${Math.round(height)})`;
+                    addSegmentToGrid(data);
+                } else {
+                    statusText.textContent = '❌ 分割失败';
+                }
+            } catch (error) {
+                console.error('预测失败:', error);
+                statusText.textContent = '❌ 预测失败';
+            }
+        });
+
+        function addSegmentToGrid(data) {
+            const item = document.createElement('div');
+            item.className = 'segment-item';
+            item.innerHTML = `
+                <img src="${data.segment_image}" alt="Segment ${data.count}">
+                <button class="delete-btn" onclick="deleteSegment(${data.count - 1})">删除</button>
+                <div class="segment-id">#${data.count - 1}</div>
+            `;
+            segmentGrid.insertBefore(item, segmentGrid.firstChild);
+            segmentCount.textContent = data.count;
+        }
+
+        async function loadSavedSegments() {
+            try {
+                const response = await fetch('/get_saved_segments');
+                const data = await response.json();
+
+                segmentGrid.innerHTML = '';
+                data.segments.forEach(seg => {
+                    const item = document.createElement('div');
+                    item.className = 'segment-item';
+                    item.innerHTML = `
+                        <img src="${seg.image}" alt="Segment ${seg.id}">
+                        <button class="delete-btn" onclick="deleteSegment(${seg.id})">删除</button>
+                        <div class="segment-id">#${seg.id}</div>
+                    `;
+                    segmentGrid.appendChild(item);
+                });
+
+                segmentCount.textContent = data.count;
+            } catch (error) {
+                console.error('加载分割失败:', error);
+            }
+        }
+
+        async function deleteSegment(id) {
+            if (!confirm('确定要删除这个分割吗？')) return;
+
+            try {
+                const response = await fetch(`/delete_segment/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadSavedSegments();
+                }
+            } catch (error) {
+                console.error('删除失败:', error);
+            }
+        }
+
+        // ===== 曲线调整功能 =====
+
+        // 计算曲线查找表
+        function updateCurveLUT() {
+            // 按 x 坐标排序控制点
+            curvePoints.sort((a, b) => a.x - b.x);
+
+            // 使用线性插值生成 LUT
+            for (let i = 0; i < 256; i++) {
+                let value = i;
+
+                // 找到两个相邻的控制点
+                for (let j = 0; j < curvePoints.length - 1; j++) {
+                    const p1 = curvePoints[j];
+                    const p2 = curvePoints[j + 1];
+
+                    if (i >= p1.x && i <= p2.x) {
+                        // 线性插值
+                        const t = (i - p1.x) / (p2.x - p1.x);
+                        value = p1.y + t * (p2.y - p1.y);
+                        break;
+                    }
+                }
+
+                curveLUT[i] = Math.max(0, Math.min(255, Math.round(value)));
+            }
+
+            drawCurve();
+            redrawCanvas();
+            updatePreview();
+            saveConfig();  // 自动保存配置
+        }
+
+        // 绘制曲线编辑器
+        function drawCurve() {
+            const w = curveCanvas.width;
+            const h = curveCanvas.height;
+
+            curveCtx.fillStyle = '#f8f9fa';
+            curveCtx.fillRect(0, 0, w, h);
+
+            // 绘制网格
+            curveCtx.strokeStyle = '#e0e0e0';
+            curveCtx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const x = (w * i) / 4;
+                const y = (h * i) / 4;
+                curveCtx.beginPath();
+                curveCtx.moveTo(x, 0);
+                curveCtx.lineTo(x, h);
+                curveCtx.stroke();
+                curveCtx.beginPath();
+                curveCtx.moveTo(0, y);
+                curveCtx.lineTo(w, y);
+                curveCtx.stroke();
+            }
+
+            // 绘制对角线参考
+            curveCtx.strokeStyle = '#ccc';
+            curveCtx.setLineDash([5, 5]);
+            curveCtx.beginPath();
+            curveCtx.moveTo(0, h);
+            curveCtx.lineTo(w, 0);
+            curveCtx.stroke();
+            curveCtx.setLineDash([]);
+
+            // 绘制曲线
+            curveCtx.strokeStyle = '#667eea';
+            curveCtx.lineWidth = 2;
+            curveCtx.beginPath();
+            for (let i = 0; i < 256; i++) {
+                const x = (i / 255) * w;
+                const y = h - (curveLUT[i] / 255) * h;
+                if (i === 0) {
+                    curveCtx.moveTo(x, y);
+                } else {
+                    curveCtx.lineTo(x, y);
+                }
+            }
+            curveCtx.stroke();
+
+            // 绘制控制点
+            curvePoints.forEach((p, idx) => {
+                const x = (p.x / 255) * w;
+                const y = h - (p.y / 255) * h;
+
+                curveCtx.fillStyle = selectedPoint === idx ? '#ff6b6b' : '#667eea';
+                curveCtx.beginPath();
+                curveCtx.arc(x, y, 5, 0, Math.PI * 2);
+                curveCtx.fill();
+
+                curveCtx.strokeStyle = 'white';
+                curveCtx.lineWidth = 2;
+                curveCtx.stroke();
+            });
+        }
+
+        // 曲线画布鼠标事件
+        curveCanvas.addEventListener('mousedown', (e) => {
+            const rect = curveCanvas.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 255;
+            const y = 255 - ((e.clientY - rect.top) / rect.height) * 255;
+
+            // 检查是否点击现有控制点
+            for (let i = 0; i < curvePoints.length; i++) {
+                const p = curvePoints[i];
+                const dx = Math.abs(p.x - x);
+                const dy = Math.abs(p.y - y);
+                if (dx < 10 && dy < 10) {
+                    selectedPoint = i;
+                    isDraggingCurve = true;
+                    return;
+                }
+            }
+
+            // 添加新控制点（但不能是端点位置）
+            if (x > 10 && x < 245) {
+                curvePoints.push({x: Math.round(x), y: Math.round(y)});
+                selectedPoint = curvePoints.length - 1;
+                isDraggingCurve = true;
+                updateCurveLUT();
+            }
+        });
+
+        curveCanvas.addEventListener('mousemove', (e) => {
+            if (!isDraggingCurve || selectedPoint === null) return;
+
+            const rect = curveCanvas.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 255;
+            const y = 255 - ((e.clientY - rect.top) / rect.height) * 255;
+
+            // 不允许移动端点的 x 坐标
+            if (selectedPoint === 0) {
+                curvePoints[0].y = Math.max(0, Math.min(255, Math.round(y)));
+            } else if (selectedPoint === curvePoints.length - 1) {
+                curvePoints[selectedPoint].y = Math.max(0, Math.min(255, Math.round(y)));
+            } else {
+                curvePoints[selectedPoint].x = Math.max(0, Math.min(255, Math.round(x)));
+                curvePoints[selectedPoint].y = Math.max(0, Math.min(255, Math.round(y)));
+            }
+
+            updateCurveLUT();
+        });
+
+        curveCanvas.addEventListener('mouseup', () => {
+            isDraggingCurve = false;
+        });
+
+        curveCanvas.addEventListener('dblclick', (e) => {
+            if (selectedPoint !== null && selectedPoint !== 0 && selectedPoint !== curvePoints.length - 1) {
+                curvePoints.splice(selectedPoint, 1);
+                selectedPoint = null;
+                updateCurveLUT();
+            }
+        });
+
+        // 应用曲线预设
+        function applyCurvePreset(preset) {
+            switch (preset) {
+                case 'linear':
+                    curvePoints = [{x: 0, y: 0}, {x: 255, y: 255}];
+                    break;
+                case 'increase':
+                    curvePoints = [{x: 0, y: 30}, {x: 255, y: 255}];
+                    break;
+                case 'decrease':
+                    curvePoints = [{x: 0, y: 0}, {x: 255, y: 225}];
+                    break;
+                case 'contrast':
+                    curvePoints = [{x: 0, y: 20}, {x: 128, y: 128}, {x: 255, y: 235}];
+                    break;
+                case 'sshape':
+                    curvePoints = [{x: 0, y: 0}, {x: 64, y: 48}, {x: 192, y: 208}, {x: 255, y: 255}];
+                    break;
+            }
+            selectedPoint = null;
+            updateCurveLUT();
+        }
+
+        loadImage();
+        updateCurveLUT();  // 初始化曲线
+    </script>
+</body>
+</html>
