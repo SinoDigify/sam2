@@ -1,12 +1,24 @@
 {
-  "brightness": 100,
-  "contrast": 100,
-  "saturation": 100,
-  "invert_colors": false,
+  "brightness": 200,
+  "contrast": 200,
+  "saturation": 0,
+  "invert_colors": true,
   "curve_points": [
     {
       "x": 0,
       "y": 0
+    },
+    {
+      "x": 121,
+      "y": 4
+    },
+    {
+      "x": 128,
+      "y": 246
+    },
+    {
+      "x": 214,
+      "y": 247
     },
     {
       "x": 255,

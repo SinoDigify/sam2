@@ -19,9 +19,8 @@
             overflow: hidden;
         }
 
-        /* 左侧分割列表 */
-        .sidebar-left {
-            width: 280px;
+        .sidebar {
+            width: 340px;
             background: white;
             border-right: 1px solid #e0e0e0;
             display: flex;
@@ -43,6 +42,88 @@
         .header p {
             opacity: 0.9;
             font-size: 12px;
+        }
+
+        .controls {
+            padding: 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .control-group:last-child {
+            border-bottom: none;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        .control-value {
+            display: inline-block;
+            min-width: 50px;
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .zoom-controls, .grid-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-reset {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #138496;
         }
 
         .status {
@@ -117,7 +198,6 @@
             margin-top: 4px;
         }
 
-        /* 中间画布区域 */
         .main-content {
             flex: 1;
             display: flex;
@@ -219,185 +299,6 @@
             color: #667eea;
         }
 
-        /* 右侧控制面板 */
-        .sidebar-right {
-            width: 360px;
-            background: white;
-            border-left: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            transition: width 0.3s;
-        }
-
-        .sidebar-right.collapsed {
-            width: 50px;
-        }
-
-        .sidebar-right.collapsed .panel-content {
-            display: none;
-        }
-
-        .sidebar-right.collapsed .toggle-btn {
-            transform: rotate(180deg);
-        }
-
-        .panel-header {
-            background: #f8f9fa;
-            padding: 12px 15px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .panel-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .toggle-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            color: #666;
-            transition: transform 0.3s;
-            padding: 5px;
-        }
-
-        .panel-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .section {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 15px;
-        }
-
-        .section:last-child {
-            border-bottom: none;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            padding: 8px 10px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            user-select: none;
-        }
-
-        .section-header:hover {
-            background: #e9ecef;
-        }
-
-        .section-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .collapse-icon {
-            font-size: 12px;
-            color: #666;
-            transition: transform 0.2s;
-        }
-
-        .section.collapsed .collapse-icon {
-            transform: rotate(-90deg);
-        }
-
-        .section.collapsed .section-body {
-            display: none;
-        }
-
-        .section-body {
-            padding: 10px 0;
-        }
-
-        .control-group {
-            margin-bottom: 12px;
-        }
-
-        .control-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .control-group input[type="range"] {
-            width: 100%;
-            margin: 5px 0;
-        }
-
-        .control-value {
-            display: inline-block;
-            min-width: 50px;
-            text-align: right;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .btn {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5568d3;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #545b62;
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #218838;
-        }
-
-        .btn-reset {
-            background: #17a2b8;
-            color: white;
-        }
-
-        .btn-reset:hover {
-            background: #138496;
-        }
-
-        .zoom-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
         .zoom-level {
             font-size: 12px;
             color: #666;
@@ -423,77 +324,6 @@
             margin: 0;
         }
 
-        .theme-presets {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .theme-btn {
-            padding: 8px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 4px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-        }
-
-        .theme-btn:hover {
-            background: #f0f0f0;
-            border-color: #667eea;
-        }
-
-        .theme-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .theme-name {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .theme-desc {
-            font-size: 10px;
-            opacity: 0.8;
-        }
-
-        .curve-canvas {
-            width: 100%;
-            height: 150px;
-            border: 1px solid #e0e0e0;
-            cursor: crosshair;
-            display: block;
-            border-radius: 4px;
-        }
-
-        .curve-presets {
-            display: flex;
-            gap: 5px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-
-        .curve-preset-btn {
-            padding: 4px 8px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 3px;
-            font-size: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .curve-preset-btn:hover {
-            background: #f0f0f0;
-            border-color: #667eea;
-        }
-
         .comparison-container {
             display: flex;
             gap: 10px;
@@ -513,23 +343,128 @@
         }
 
         .comparison-label {
-            font-size: 10px;
+            font-size: 11px;
             color: #666;
             margin-top: 5px;
         }
 
-        .save-config-btn {
+        .curve-editor {
+            margin-top: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .curve-canvas {
             width: 100%;
-            margin-top: 15px;
+            height: 200px;
+            border: 1px solid #e0e0e0;
+            cursor: crosshair;
+            display: block;
+        }
+
+        .curve-presets {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .curve-preset-btn {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .curve-preset-btn:hover {
+            background: #f0f0f0;
+            border-color: #667eea;
         }
     </style>
 </head>
 <body>
-    <!-- 左侧分割列表 -->
-    <div class="sidebar-left">
+    <div class="sidebar">
         <div class="header">
             <h1>🖼️ 书法分割工具</h1>
             <p>框选自动分割 · 专业工具</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>🔍 缩放控制</label>
+                <div class="zoom-controls">
+                    <button class="btn btn-secondary" onclick="zoomOut()">−</button>
+                    <span class="zoom-level" id="zoomLevel">100%</span>
+                    <button class="btn btn-secondary" onclick="zoomIn()">+</button>
+                    <button class="btn btn-secondary" onclick="resetZoom()">重置</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>📐 网格参考线</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showGrid" onchange="toggleGrid()">
+                    <label for="showGrid">显示网格</label>
+                </div>
+                <div style="margin-top: 8px;">
+                    <label style="font-size: 11px; color: #999;">网格间距: <span class="control-value" id="gridSizeValue">50</span>px</label>
+                    <input type="range" id="gridSize" min="20" max="200" value="50" oninput="updateGridSize(this.value)" disabled>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>🎨 图像调整</label>
+                <div style="margin-bottom: 8px;">
+                    <label style="font-size: 11px; color: #999;">亮度: <span class="control-value" id="brightnessValue">100</span>%</label>
+                    <input type="range" id="brightness" min="0" max="200" value="100" oninput="updateImageAdjustments()">
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <label style="font-size: 11px; color: #999;">对比度: <span class="control-value" id="contrastValue">100</span>%</label>
+                    <input type="range" id="contrast" min="0" max="200" value="100" oninput="updateImageAdjustments()">
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <label style="font-size: 11px; color: #999;">饱和度: <span class="control-value" id="saturationValue">100</span>%</label>
+                    <input type="range" id="saturation" min="0" max="200" value="100" oninput="updateImageAdjustments()">
+                </div>
+
+                <!-- 反色 -->
+                <div class="checkbox-group" style="margin-top: 8px;">
+                    <input type="checkbox" id="invertColors" onchange="updateImageAdjustments()">
+                    <label for="invertColors">🔄 反色</label>
+                </div>
+
+                <!-- 曲线调整 -->
+                <div class="curve-editor">
+                    <label style="font-size: 11px; color: #999; display: block; margin-bottom: 5px;">📈 色调曲线</label>
+                    <canvas id="curveCanvas" class="curve-canvas" width="256" height="200"></canvas>
+                    <div class="curve-presets">
+                        <button class="curve-preset-btn" onclick="applyCurvePreset('linear')">线性</button>
+                        <button class="curve-preset-btn" onclick="applyCurvePreset('increase')">提亮</button>
+                        <button class="curve-preset-btn" onclick="applyCurvePreset('decrease')">压暗</button>
+                        <button class="curve-preset-btn" onclick="applyCurvePreset('contrast')">高对比</button>
+                        <button class="curve-preset-btn" onclick="applyCurvePreset('sshape')">S曲线</button>
+                    </div>
+                </div>
+
+                <!-- 对比预览 -->
+                <div class="comparison-container">
+                    <div class="comparison-item">
+                        <canvas id="previewOriginal" width="120" height="120"></canvas>
+                        <div class="comparison-label">原始</div>
+                    </div>
+                    <div class="comparison-item">
+                        <canvas id="previewAdjusted" width="120" height="120"></canvas>
+                        <div class="comparison-label">调整后</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-reset" onclick="resetAdjustments()" style="width: 100%; margin-top: 10px;">重置所有调整</button>
+            </div>
         </div>
 
         <div class="status" id="statusText">加载中...</div>
@@ -542,7 +477,6 @@
         </div>
     </div>
 
-    <!-- 中间画布区域 -->
     <div class="main-content">
         <div class="toolbar">
             <div style="font-size: 14px; font-weight: 600;">📍 框选区域 (最小 100×100)</div>
@@ -561,148 +495,7 @@
 
         <div class="instructions">
             <strong>使用说明：</strong>
-            框选汉字 (≥100×100) → 自动分割保存 → 使用右侧工具调整图像
-        </div>
-    </div>
-
-    <!-- 右侧控制面板 -->
-    <div class="sidebar-right" id="sidebarRight">
-        <div class="panel-header">
-            <span class="panel-title">⚙️ 控制面板</span>
-            <button class="toggle-btn" onclick="togglePanel()">◀</button>
-        </div>
-
-        <div class="panel-content">
-            <!-- 主题预设 -->
-            <div class="section">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span class="section-title">🎨 主题预设</span>
-                    <span class="collapse-icon">▼</span>
-                </div>
-                <div class="section-body">
-                    <div class="theme-presets">
-                        <button class="theme-btn" onclick="applyTheme('default')">
-                            <span class="theme-name">默认</span>
-                            <span class="theme-desc">原始设置</span>
-                        </button>
-                        <button class="theme-btn" onclick="applyTheme('bright')">
-                            <span class="theme-name">明亮</span>
-                            <span class="theme-desc">提亮对比</span>
-                        </button>
-                        <button class="theme-btn" onclick="applyTheme('dark')">
-                            <span class="theme-name">深色</span>
-                            <span class="theme-desc">压暗细节</span>
-                        </button>
-                        <button class="theme-btn" onclick="applyTheme('highcontrast')">
-                            <span class="theme-name">高对比</span>
-                            <span class="theme-desc">强化对比</span>
-                        </button>
-                        <button class="theme-btn" onclick="applyTheme('ink')">
-                            <span class="theme-name">水墨</span>
-                            <span class="theme-desc">反色水墨</span>
-                        </button>
-                        <button class="theme-btn" onclick="applyTheme('soft')">
-                            <span class="theme-name">柔和</span>
-                            <span class="theme-desc">低饱和度</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 缩放控制 -->
-            <div class="section collapsed">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span class="section-title">🔍 缩放控制</span>
-                    <span class="collapse-icon">▼</span>
-                </div>
-                <div class="section-body">
-                    <div class="zoom-controls">
-                        <button class="btn btn-secondary" onclick="zoomOut()" style="flex: 1;">−</button>
-                        <span class="zoom-level" id="zoomLevel">100%</span>
-                        <button class="btn btn-secondary" onclick="zoomIn()" style="flex: 1;">+</button>
-                        <button class="btn btn-secondary" onclick="resetZoom()" style="flex: 1;">重置</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 网格参考线 -->
-            <div class="section collapsed">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span class="section-title">📐 网格参考线</span>
-                    <span class="collapse-icon">▼</span>
-                </div>
-                <div class="section-body">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="showGrid" onchange="toggleGrid()">
-                        <label for="showGrid">显示网格</label>
-                    </div>
-                    <div class="control-group" style="margin-top: 10px;">
-                        <label>网格间距: <span class="control-value" id="gridSizeValue">50</span>px</label>
-                        <input type="range" id="gridSize" min="20" max="200" value="50" oninput="updateGridSize(this.value)" disabled>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 图像调整 -->
-            <div class="section collapsed">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span class="section-title">🎨 图像调整</span>
-                    <span class="collapse-icon">▼</span>
-                </div>
-                <div class="section-body">
-                    <div class="control-group">
-                        <label>亮度: <span class="control-value" id="brightnessValue">100</span>%</label>
-                        <input type="range" id="brightness" min="0" max="200" value="100" oninput="updateImageAdjustments()">
-                    </div>
-                    <div class="control-group">
-                        <label>对比度: <span class="control-value" id="contrastValue">100</span>%</label>
-                        <input type="range" id="contrast" min="0" max="200" value="100" oninput="updateImageAdjustments()">
-                    </div>
-                    <div class="control-group">
-                        <label>饱和度: <span class="control-value" id="saturationValue">100</span>%</label>
-                        <input type="range" id="saturation" min="0" max="200" value="100" oninput="updateImageAdjustments()">
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="invertColors" onchange="updateImageAdjustments()">
-                        <label for="invertColors">🔄 反色</label>
-                    </div>
-
-                    <!-- 对比预览 -->
-                    <div class="comparison-container">
-                        <div class="comparison-item">
-                            <canvas id="previewOriginal" width="120" height="120"></canvas>
-                            <div class="comparison-label">原始</div>
-                        </div>
-                        <div class="comparison-item">
-                            <canvas id="previewAdjusted" width="120" height="120"></canvas>
-                            <div class="comparison-label">调整后</div>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-reset" onclick="resetAdjustments()" style="width: 100%; margin-top: 10px;">重置调整</button>
-                </div>
-            </div>
-
-            <!-- 曲线调整 -->
-            <div class="section collapsed">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span class="section-title">📈 曲线调整</span>
-                    <span class="collapse-icon">▼</span>
-                </div>
-                <div class="section-body">
-                    <canvas id="curveCanvas" class="curve-canvas" width="256" height="150"></canvas>
-                    <div class="curve-presets">
-                        <button class="curve-preset-btn" onclick="applyCurvePreset('linear')">线性</button>
-                        <button class="curve-preset-btn" onclick="applyCurvePreset('increase')">提亮</button>
-                        <button class="curve-preset-btn" onclick="applyCurvePreset('decrease')">压暗</button>
-                        <button class="curve-preset-btn" onclick="applyCurvePreset('contrast')">高对比</button>
-                        <button class="curve-preset-btn" onclick="applyCurvePreset('sshape')">S曲线</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 保存配置按钮 -->
-            <button class="btn btn-success save-config-btn" onclick="saveConfigToServer()">💾 保存配置到服务器</button>
+            框选汉字 (≥100×100) → 自动分割保存 → 使用网格和图像调整辅助精确选择
         </div>
     </div>
 
@@ -744,96 +537,11 @@
 
         // 曲线调整参数
         let curvePoints = [{x: 0, y: 0}, {x: 255, y: 255}];
-        let curveLUT = new Array(256);
+        let curveLUT = new Array(256);  // 查找表
         let selectedPoint = null;
         let isDraggingCurve = false;
 
         const MIN_SELECTION_SIZE = 100;
-
-        // 主题预设
-        const themes = {
-            'default': {
-                brightness: 100,
-                contrast: 100,
-                saturation: 100,
-                invert_colors: false,
-                curve_points: [{x: 0, y: 0}, {x: 255, y: 255}]
-            },
-            'bright': {
-                brightness: 130,
-                contrast: 110,
-                saturation: 105,
-                invert_colors: false,
-                curve_points: [{x: 0, y: 30}, {x: 255, y: 255}]
-            },
-            'dark': {
-                brightness: 80,
-                contrast: 120,
-                saturation: 95,
-                invert_colors: false,
-                curve_points: [{x: 0, y: 0}, {x: 255, y: 225}]
-            },
-            'highcontrast': {
-                brightness: 100,
-                contrast: 150,
-                saturation: 100,
-                invert_colors: false,
-                curve_points: [{x: 0, y: 20}, {x: 128, y: 128}, {x: 255, y: 235}]
-            },
-            'ink': {
-                brightness: 110,
-                contrast: 130,
-                saturation: 0,
-                invert_colors: true,
-                curve_points: [{x: 0, y: 0}, {x: 255, y: 255}]
-            },
-            'soft': {
-                brightness: 105,
-                contrast: 95,
-                saturation: 70,
-                invert_colors: false,
-                curve_points: [{x: 0, y: 10}, {x: 255, y: 245}]
-            }
-        };
-
-        // 切换面板
-        function togglePanel() {
-            document.getElementById('sidebarRight').classList.toggle('collapsed');
-        }
-
-        // 切换折叠区域
-        function toggleSection(header) {
-            header.parentElement.classList.toggle('collapsed');
-        }
-
-        // 应用主题
-        function applyTheme(themeName) {
-            const theme = themes[themeName];
-            if (!theme) return;
-
-            brightness = theme.brightness;
-            contrast = theme.contrast;
-            saturation = theme.saturation;
-            invertColors = theme.invert_colors;
-            curvePoints = JSON.parse(JSON.stringify(theme.curve_points));
-
-            // 更新 UI
-            document.getElementById('brightness').value = brightness;
-            document.getElementById('contrast').value = contrast;
-            document.getElementById('saturation').value = saturation;
-            document.getElementById('invertColors').checked = invertColors;
-            document.getElementById('brightnessValue').textContent = brightness;
-            document.getElementById('contrastValue').textContent = contrast;
-            document.getElementById('saturationValue').textContent = saturation;
-
-            updateCurveLUT();
-            redrawCanvas();
-            updatePreview();
-
-            // 更新主题按钮状态
-            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.closest('.theme-btn').classList.add('active');
-        }
 
         // 加载图像
         async function loadImage() {
@@ -867,11 +575,13 @@
                 const response = await fetch('/get_config');
                 const config = await response.json();
 
+                // 应用配置
                 brightness = config.brightness || 100;
                 contrast = config.contrast || 100;
                 saturation = config.saturation || 100;
                 invertColors = config.invert_colors || false;
 
+                // 更新 UI
                 document.getElementById('brightness').value = brightness;
                 document.getElementById('contrast').value = contrast;
                 document.getElementById('saturation').value = saturation;
@@ -880,6 +590,7 @@
                 document.getElementById('contrastValue').textContent = contrast;
                 document.getElementById('saturationValue').textContent = saturation;
 
+                // 加载曲线点
                 if (config.curve_points && config.curve_points.length > 0) {
                     curvePoints = config.curve_points;
                     updateCurveLUT();
@@ -892,8 +603,8 @@
             }
         }
 
-        // 保存配置到服务器（仅在点击按钮时调用）
-        async function saveConfigToServer() {
+        // 保存配置
+        async function saveConfig() {
             try {
                 const config = {
                     brightness: parseInt(brightness),
@@ -903,21 +614,13 @@
                     curve_points: curvePoints
                 };
 
-                const response = await fetch('/save_config', {
+                await fetch('/save_config', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(config)
                 });
-
-                if (response.ok) {
-                    statusText.textContent = '✅ 配置已保存';
-                    setTimeout(() => {
-                        statusText.textContent = '✅ 就绪 - 框选汉字开始分割 (最小 100×100)';
-                    }, 2000);
-                }
             } catch (error) {
                 console.error('保存配置失败:', error);
-                statusText.textContent = '❌ 保存配置失败';
             }
         }
 
@@ -944,6 +647,7 @@
             previewAdjustedCtx.drawImage(originalImage, x, y, w, h);
             previewAdjustedCtx.filter = 'none';
 
+            // 应用曲线调整到预览
             applyCurveToCanvas(previewAdjustedCtx, size, size);
         }
 
@@ -958,12 +662,18 @@
             canvasLayers.style.width = displayWidth + 'px';
             canvasLayers.style.height = displayHeight + 'px';
 
+            // 清空主画布
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 应用图像调整
             ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
             ctx.drawImage(originalImage, 0, 0);
             ctx.filter = 'none';
 
+            // 应用曲线调整
             applyCurveToCanvas(ctx, canvas.width, canvas.height);
+
+            // 绘制网格到独立层
             drawGrid();
         }
 
@@ -976,6 +686,7 @@
             gridCtx.strokeStyle = 'rgba(102, 126, 234, 0.5)';
             gridCtx.lineWidth = 1;
 
+            // 绘制垂直线
             for (let x = 0; x < gridCanvas.width; x += gridSize) {
                 gridCtx.beginPath();
                 gridCtx.moveTo(x, 0);
@@ -983,6 +694,7 @@
                 gridCtx.stroke();
             }
 
+            // 绘制水平线
             for (let y = 0; y < gridCanvas.height; y += gridSize) {
                 gridCtx.beginPath();
                 gridCtx.moveTo(0, y);
@@ -1004,11 +716,17 @@
 
             redrawCanvas();
             updatePreview();
+            saveConfig();  // 自动保存配置
         }
 
         // 重置调整
         function resetAdjustments() {
-            applyTheme('default');
+            document.getElementById('brightness').value = 100;
+            document.getElementById('contrast').value = 100;
+            document.getElementById('saturation').value = 100;
+            document.getElementById('invertColors').checked = false;
+            applyCurvePreset('linear');  // 同时重置曲线
+            updateImageAdjustments();
         }
 
         // 应用曲线调整到画布
@@ -1017,16 +735,18 @@
             const data = imageData.data;
 
             for (let i = 0; i < data.length; i += 4) {
-                data[i] = curveLUT[data[i]];
-                data[i + 1] = curveLUT[data[i + 1]];
-                data[i + 2] = curveLUT[data[i + 2]];
+                data[i] = curveLUT[data[i]];         // R
+                data[i + 1] = curveLUT[data[i + 1]]; // G
+                data[i + 2] = curveLUT[data[i + 2]]; // B
+                // Alpha 通道不变
             }
 
+            // 应用反色
             if (invertColors) {
                 for (let i = 0; i < data.length; i += 4) {
-                    data[i] = 255 - data[i];
-                    data[i + 1] = 255 - data[i + 1];
-                    data[i + 2] = 255 - data[i + 2];
+                    data[i] = 255 - data[i];         // R
+                    data[i + 1] = 255 - data[i + 1]; // G
+                    data[i + 2] = 255 - data[i + 2]; // B
                 }
             }
 
@@ -1207,7 +927,7 @@
                         contrast: contrast,
                         saturation: saturation,
                         curve_lut: curveLUT,
-                        invert_colors: invertColors
+                        invert_colors: invertColors  // 添加反色参数
                     })
                 });
 
@@ -1278,17 +998,22 @@
 
         // ===== 曲线调整功能 =====
 
+        // 计算曲线查找表
         function updateCurveLUT() {
+            // 按 x 坐标排序控制点
             curvePoints.sort((a, b) => a.x - b.x);
 
+            // 使用线性插值生成 LUT
             for (let i = 0; i < 256; i++) {
                 let value = i;
 
+                // 找到两个相邻的控制点
                 for (let j = 0; j < curvePoints.length - 1; j++) {
                     const p1 = curvePoints[j];
                     const p2 = curvePoints[j + 1];
 
                     if (i >= p1.x && i <= p2.x) {
+                        // 线性插值
                         const t = (i - p1.x) / (p2.x - p1.x);
                         value = p1.y + t * (p2.y - p1.y);
                         break;
@@ -1301,8 +1026,10 @@
             drawCurve();
             redrawCanvas();
             updatePreview();
+            saveConfig();  // 自动保存配置
         }
 
+        // 绘制曲线编辑器
         function drawCurve() {
             const w = curveCanvas.width;
             const h = curveCanvas.height;
@@ -1310,6 +1037,7 @@
             curveCtx.fillStyle = '#f8f9fa';
             curveCtx.fillRect(0, 0, w, h);
 
+            // 绘制网格
             curveCtx.strokeStyle = '#e0e0e0';
             curveCtx.lineWidth = 1;
             for (let i = 0; i <= 4; i++) {
@@ -1325,6 +1053,7 @@
                 curveCtx.stroke();
             }
 
+            // 绘制对角线参考
             curveCtx.strokeStyle = '#ccc';
             curveCtx.setLineDash([5, 5]);
             curveCtx.beginPath();
@@ -1333,6 +1062,7 @@
             curveCtx.stroke();
             curveCtx.setLineDash([]);
 
+            // 绘制曲线
             curveCtx.strokeStyle = '#667eea';
             curveCtx.lineWidth = 2;
             curveCtx.beginPath();
@@ -1347,6 +1077,7 @@
             }
             curveCtx.stroke();
 
+            // 绘制控制点
             curvePoints.forEach((p, idx) => {
                 const x = (p.x / 255) * w;
                 const y = h - (p.y / 255) * h;
@@ -1362,11 +1093,13 @@
             });
         }
 
+        // 曲线画布鼠标事件
         curveCanvas.addEventListener('mousedown', (e) => {
             const rect = curveCanvas.getBoundingClientRect();
             const x = ((e.clientX - rect.left) / rect.width) * 255;
             const y = 255 - ((e.clientY - rect.top) / rect.height) * 255;
 
+            // 检查是否点击现有控制点
             for (let i = 0; i < curvePoints.length; i++) {
                 const p = curvePoints[i];
                 const dx = Math.abs(p.x - x);
@@ -1378,6 +1111,7 @@
                 }
             }
 
+            // 添加新控制点（但不能是端点位置）
             if (x > 10 && x < 245) {
                 curvePoints.push({x: Math.round(x), y: Math.round(y)});
                 selectedPoint = curvePoints.length - 1;
@@ -1393,6 +1127,7 @@
             const x = ((e.clientX - rect.left) / rect.width) * 255;
             const y = 255 - ((e.clientY - rect.top) / rect.height) * 255;
 
+            // 不允许移动端点的 x 坐标
             if (selectedPoint === 0) {
                 curvePoints[0].y = Math.max(0, Math.min(255, Math.round(y)));
             } else if (selectedPoint === curvePoints.length - 1) {
@@ -1417,6 +1152,7 @@
             }
         });
 
+        // 应用曲线预设
         function applyCurvePreset(preset) {
             switch (preset) {
                 case 'linear':
@@ -1440,7 +1176,7 @@
         }
 
         loadImage();
-        updateCurveLUT();
+        updateCurveLUT();  // 初始化曲线
     </script>
 </body>
 </html>
